@@ -1,0 +1,1 @@
+# create network policies in the same namepsace that allows pods with the helm label to talk to eachother

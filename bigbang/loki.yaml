@@ -1,0 +1,31 @@
+logging:
+  enabled: false
+  engine: plg
+
+monitoring:
+  enabled: true
+
+loki:
+  enabled: true
+
+promtail:
+  enabled: true
+  values:
+    serviceMonitor:
+      enabled: true
+      
+clusterAuditor:
+  enabled: false
+
+eckoperator:
+  enabled: false
+  
+fluentbit:
+  enabled: false
+
+
+jaeger:
+  enabled: false
+
+twistlock:
+  enabled: false

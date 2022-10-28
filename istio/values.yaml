@@ -1,0 +1,43 @@
+authservice:
+  enabled: false
+domain: bigbang.dev
+enterprise: false
+gateways:
+  main: null
+  public:
+    autoHttpRedirect:
+      enabled: true
+    selector:
+      app: public-ingressgateway
+    servers:
+    - hosts:
+      - '*.bigbang.dev'
+      port:
+        name: https
+        number: 8443
+        protocol: HTTPS
+      tls:
+        credentialName: public-cert
+        mode: SIMPLE
+imagePullPolicy: IfNotPresent
+imagePullSecrets:
+- private-registry
+ingressGateways:
+  istio-ingressgateway:
+    enabled: false
+  public-ingressgateway:
+    k8s:
+      service:
+        type: LoadBalancer
+istiod:
+  env:
+  - name: ENABLE_LEGACY_FSGROUP_INJECTION
+    value: "false"
+kiali:
+  enabled: true
+monitoring:
+  enabled: true
+networkPolicies:
+  controlPlaneCidr: 0.0.0.0/0
+  enabled: true
+openshift: false

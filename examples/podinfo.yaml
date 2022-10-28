@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: podinfo
+  labels:
+    istio-injection: enabled
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: podinfo
+  namespace: podinfo
+spec:
+  interval: 1m0s
+  ref:
+    tag: 6.0.0
+  url: https://github.com/stefanprodan/podinfo.git
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  annotations:
+    servicemesh.bigbang.dev/host: podinfo
+    servicemesh.bigbang.dev/expose: podinfo-podinfo
+    servicemesh.bigbang.dev/port: "9898"
+  name: podinfo
+  namespace: podinfo
+spec:
+  chart:
+    spec:
+      chart: charts/podinfo
+      sourceRef:
+        kind: GitRepository
+        name: podinfo
+  interval: 1m0s
+  targetNamespace: podinfo
+  # postRenderers:
+  #   # Instruct helm-controller to use built-in "kustomize" post renderer.
+  #   - kustomize:
+  #       images:
+  #         - name: ghcr.io/stefanprodan/podinfo
+  #           newName: registry.dso.mil/platform-one/big-bang/apps/sandbox/podinfo/podinfo
+  #           newTag: 6.0.0
+  values:
+    image:
+      repository: registry.dso.mil/platform-one/big-bang/apps/sandbox/podinfo/podinfo
+    istio:
+      enabled: true
+    redis:
+      enabled: false
+      repository: registry1.dso.mil/ironbank/bitnami/redis
+      # image: updateme
+    logLevel: trace
+    replicaCount: 1
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+    podAnnotations:
+      kiali.io/dashboards: go,envoy
+      kiali.io/runtimes: go,envoy

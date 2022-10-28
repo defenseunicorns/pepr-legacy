@@ -1,0 +1,44 @@
+# let the ingress pod talk to the exposed pod
+# let all pods talk to istiod
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-istio-ingress
+  annotations:
+    policies.kyverno.io/category: Istio
+    policies.kyverno.io/description: Add ability for pods to pull data from istiod
+spec:
+  # refine this to look up the labels on the pods behind
+  # the service to use as a selector
+  rules:
+{{- range .Values.gateways }}
+{{ if . }}
+  - name: ingress
+    match:
+      any:
+      - resources:
+          kinds:
+          - HelmRelease
+          # do some filtering here on only HR with an expose annotaiton
+    generate:
+      kind: NetworkPolicy
+      name: istio-ingress
+      namespace: "{{`{{request.object.metadata.namespace}}`}}"
+      synchronize: true
+      data:
+        spec:
+          ingress:
+          - from:
+            - namespaceSelector:
+                matchLabels:
+                  app.kubernetes.io/name: istio-controlplane
+              podSelector:
+                matchLabels:
+                  {{ toYaml .selector }}
+            ports:
+            - port: "{{`{{ to_number(request.object.metadata.annotations.\"servicemesh.bigbang.dev/port\") }}`}}" 
+              protocol: TCP
+          policyTypes:
+          - Ingress
+{{ end }}
+{{ end }}

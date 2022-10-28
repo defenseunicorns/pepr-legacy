@@ -1,0 +1,38 @@
+# let all pods talk to istiod
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-istio-istiod
+  annotations:
+    policies.kyverno.io/category: Istio
+    policies.kyverno.io/description: Add ability for pods to pull data from istiod
+spec:
+  rules:
+  - name: default-deny-ingress
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    generate:
+      kind: NetworkPolicy
+      name: istiod-egress
+      namespace: "{{ `{{request.object.metadata.name}}`}}"
+      synchronize: true
+      data:
+        spec:
+          egress:
+          - ports:
+            - port: 15012
+              protocol: TCP
+            - port: 15014
+              protocol: TCP
+            to:
+            - namespaceSelector:
+                matchLabels:
+                  app.kubernetes.io/name: istio-controlplane
+              podSelector:
+                matchLabels:
+                  app: istiod
+          policyTypes:
+          - Egress

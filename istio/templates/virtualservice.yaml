@@ -1,0 +1,42 @@
+# Create a virtual service
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: virtualservice
+spec:
+  generateExistingOnPolicyUpdate: true
+  # background: false
+  rules:
+  - name: expose-service
+    match:
+      any:
+      - resources:
+          kinds:
+          - HelmRelease
+    generate:
+      synchronize: true
+      apiVersion: networking.istio.io/v1beta1
+      kind: VirtualService
+      name: "{{`{{ request.object.metadata.name }}`}}-autogen"
+      # generate the resource in the new namespace
+      namespace: "{{`{{request.object.spec.targetNamespace}}`}}"
+      data:
+        kind: VirtualService
+        metadata:
+          labels:
+            somekey: somevalue
+        spec:
+          gateways:
+          {{- range $name, $v := .Values.gateways }}
+          {{- if $v }}
+          - istio-system/{{ $name}}
+          {{- end }}
+          {{- end }}
+          hosts:
+          - "{{`{{ request.object.metadata.annotations.\"servicemesh.bigbang.dev/host\" }}`}}.{{ .Values.domain }}"
+          http:
+          - route:
+            - destination:
+                host: "{{`{{request.object.metadata.annotations.\"servicemesh.bigbang.dev/expose\"}}`}}.{{`{{ request.object.spec.targetNamespace }}`}}.svc.cluster.local"
+                port:
+                  number: "{{`{{ to_number(request.object.metadata.annotations.\"servicemesh.bigbang.dev/port\") }}`}}"
