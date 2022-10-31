@@ -158,3 +158,10 @@ metadata:
 | servicemesh.bigbang.dev/expose| Name of the service to expose |
 | servicemesh.bigbang.dev/port| Port exposed on the virtual service |
 | servicemesh.bigbang.dev/host | host name that goes as a subdomain under the default domain configured via istio |
+
+
+
+
+## Policy Exceptions
+
+Looking how how we could enable Policy Exceptions, there could be a rework done of how some of the policies are done.  Looking at the container registry policy, we could rework it to [This ClusterPolicy](./policy/registries.yaml) that allows for using an annotation on the namespace (since creating namespaces is a cluster admin permission) that would provide namespace level exceptions to the policy
