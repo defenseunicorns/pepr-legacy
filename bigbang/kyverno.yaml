@@ -22,5 +22,3 @@ kyvernopolicies:
         validationFailureAction: audit
       require-non-root-user:
         validationFailureAction: audit
-      disallow-host-namespaces:
-        validationFailureAction: audit
