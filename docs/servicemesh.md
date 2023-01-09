@@ -3,6 +3,7 @@
 ## Integration with ServiceMesh
 
 ### VirtualService
+
 A VirtualService needs to be created to expose services within a package.  Current implementation monitors the HelmRelease that the application is deployed with and creates one based on annotations on the HelmRelease:
 
 
@@ -25,3 +26,12 @@ When a `VirtualService` is created, a `NetworkPolicy` is also required to allow 
 ### Make sure new namespaces have IstioInjection
 
 1. Make sure new namespaces have Istio injected via a policy like this: https://kyverno.io/policies/istio/add-sidecar-injection-namespace/add-sidecar-injection-namespace/ 
+
+### mTLS Enforcement
+
+Istio mTLS mode should be configured and default to STRICT for the namespace, with a [`PeerAuthentication`](https://istio.io/latest/docs/reference/config/security/peer_authentication/). Annotations can be added for configuring this to a different mode or setting certain ports to PERMISSIVE.
+
+| Annotation | Object | Description |
+| -----------| ------ | ----------- |
+| `servicemesh.bigbang.dev/mtlsMode`  | HelmRelease | (optional) The mtls mode to set on the namespace (STRICT, PERMISSIVE, DISABLE), defaults to STRICT |
+| `servicemesh.bigbang.dev/permissivePorts` | Pod | (optional) Comma separated list of ports on the given pod to set to PERMISSIVE mTLS mode |
