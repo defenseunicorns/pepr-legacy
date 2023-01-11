@@ -4,7 +4,7 @@ In order for an application to be integrated with the monitoring stack within Bi
 
 
 1. Identify the pods that have metrics endpoints via:
-    1. This can be done with the Prometheus annotations defined below:
+    1. When Istio is not enabled as well (see [here](https://istio.io/latest/docs/ops/integrations/prometheus/#option-1-metrics-merging) for how istio merges metrics), this can be done with the Prometheus annotations defined below:
 
         `proetheus.io/scrape` <- Set to true
 
@@ -15,7 +15,6 @@ In order for an application to be integrated with the monitoring stack within Bi
         `prometheus.io/port` <-- The port to scrape
     1. This can be done with `ServiceMonitors`, `PodMonitors`
 1. Create a NetworkPolicy that allows communication from the Prometheus Pods in the Monitoring namespace to talk to the pods with metrics
-1. Find and identify Grafana Dashboards for the application and inject them into Grafana
 
 
 ## Implementation
