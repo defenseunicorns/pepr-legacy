@@ -20,9 +20,10 @@ In order for an application to be integrated with the monitoring stack within Bi
 
 ## Implementation
 
-Proposed implementation to start is to create Kyverno policies to create a `NetworkPolicies` for each:
+Proposed implementation, to start, is to create Kyverno policies to create a `NetworkPolicies` for each:
     
 1. pod with the appropriate annotation
 2. ServiceMonitor
 3. PodMonitor 
 
+When Istio is enabled, will also need additional considerations for [mTLS settings](https://docs-bigbang.dso.mil/latest/packages/monitoring/docs/istio-mtls-metrics/)
