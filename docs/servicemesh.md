@@ -22,6 +22,9 @@ When a `VirtualService` is created, a `NetworkPolicy` is also required to allow 
 
 1. In order for sidecars to talk to istiod, there needs to be a network policy allowing commmincation from the namespace (and all pods) to the istiod pod.  It's implemented [here](../istio/templates/networkpolicy-istiod.yaml)
 
+### AuthorizationPolicies
+
+The proposed initial set of `AuthorizationPolicy` resources would be effectively mirrors of all `NetworkPolicy` resources. For example, if a `NetworkPolicy` exists to allow pod A in namespace A to talk with pod B in namespace B, this would be duplicated in an `AuthorizationPolicy` as well.
 
 ### Make sure new namespaces have IstioInjection
 
@@ -29,9 +32,13 @@ When a `VirtualService` is created, a `NetworkPolicy` is also required to allow 
 
 ### mTLS Enforcement
 
-Istio mTLS mode should be configured and default to STRICT for the namespace, with a [`PeerAuthentication`](https://istio.io/latest/docs/reference/config/security/peer_authentication/). Annotations can be added for configuring this to a different mode or setting certain ports to PERMISSIVE.
+Istio mTLS mode should be configured and default to STRICT for the namespace, with a [`PeerAuthentication`](https://istio.io/latest/docs/reference/config/security/peer_authentication/). Annotations can be added for configuring this to a different mode or setting certain ports to PERMISSIVE. Note the scope/object for these annotations, some can be set on the HelmRelease for more "global" effect, while some are pod specific.
 
 | Annotation | Object | Description |
 | -----------| ------ | ----------- |
 | `servicemesh.bigbang.dev/mtlsMode`  | HelmRelease | (optional) The mtls mode to set on the namespace (STRICT, PERMISSIVE, DISABLE), defaults to STRICT |
-| `servicemesh.bigbang.dev/permissivePorts` | Pod | (optional) Comma separated list of ports on the given pod to set to PERMISSIVE mTLS mode |
+| `servicemesh.bigbang.dev/permissivePorts` | Pod/Deployment (any resource that creates a pod) | (optional) Comma separated list of ports on the given pod to set to PERMISSIVE mTLS mode |
+
+Examples of these annotations:
+- `servicemesh.bigbang.dev/mtlsMode=PERMISSIVE`, set on the `foo` HelmRelease would create a namespace-wide `PeerAuthentication` to set PERMISSIVE mTLS mode on all pods that are part of the `foo` HelmRelease
+- `servicemesh.bigbang.dev/permissivePorts=9090,9091`, set on deployment A in `foo` HR/namespace would result in a `PeerAuthentication` with a pod selector for all pods in deployment A, which sets ports 9090 and 9091 to PERMISSIVE
