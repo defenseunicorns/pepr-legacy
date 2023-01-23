@@ -82,6 +82,9 @@ Once a Virtual Machine (vm) custom resource is created. An SRE may change the `s
 
 When the Virtual Machine is running, users may access the VM using VNC. 
 
+### Example
+
+Excellent [video](https://drive.google.com/file/d/1xeaFuAOo1A-Zyr1SBc1RTOxVu4SZ9NPa/view) showing a VM running from a zarf deployment with Istio and the associated [naps-dev/mockingbird](https://github.com/naps-dev/mockingbird) github repository. 
 
 ## Baffles
 
@@ -100,3 +103,20 @@ spec:
   url: "ws://<NODE>:<PORT>/k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/default/virtualmachineinstances/iso-win10/vnc"
   category: "vm"
 ```
+
+# PEPR 
+
+Components required to integrate a Virtual Machine with Big Bang:
+
+1. VM gets built as a compatible Docker Image ([example](https://github.com/naps-dev/mockingbird/blob/main/Dockerfile))
+2. Manifests/Helm Chart
+   1. Virtal Machine KubeVirt CR, note ports and selector labels ([example](https://github.com/naps-dev/mockingbird/blob/main/chart/templates/virtualmachine.yaml))
+   2. Kubernetes Service, with ports specified ([example](https://github.com/naps-dev/mockingbird/blob/main/chart/templates/service.yaml))
+   3. Istio Virtual Service, with ports specified ([example](https://github.com/naps-dev/mockingbird/blob/main/chart/templates/virtualservice.yaml))
+3. (If Baffles) A Baffles Application CR created 
+
+Not yet identified/to be further investigated:
+1. Logging/Monitoring, Kubevirt creates a "virt-handler" pod that can be integrated with logging/monitoring. However, the operations of a VM are not integrated out of the box. 
+2. Iron Bank scanning of Virtual Machine docker built images 
+3. Database/Object Storage - will depend on the target environment and needs of the VM. 
+4. SSO - will depend on the virtual machine, needs to be investigated further
