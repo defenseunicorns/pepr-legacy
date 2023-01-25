@@ -68,7 +68,7 @@ All code is Kyverno policy. Users must interact via annotations. Deployments los
 	- Limited by Kyverno limits (unless using a pre-processor)
 
 #### Option 2: Custom Operator
-Complied code that does everything.
+Compiled code that does everything.
 * Pros: 
 	- Artisinal crafting of logic for every component
 	- Unbounded
