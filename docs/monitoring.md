@@ -19,7 +19,7 @@ In order for an application to be integrated with the monitoring stack within Bi
 
 ## Implementation
 
-Proposed implementation, to start, is to create Kyverno policies to create a `NetworkPolicies` for each:
+Proposed implementation, to start, is to make Kyverno policies to create `NetworkPolicies` plus appropriate resources for each of the below:
     
 1. pod with the appropriate annotation
 2. ServiceMonitor
