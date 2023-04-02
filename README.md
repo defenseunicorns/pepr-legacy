@@ -1,6 +1,6 @@
 # Pepr
 
-## Overivew
+## Overview
 Pepr aims to automate the complexities of integrating applications (we'll refer to them as "mission apps") with secure software baseline platforms. Initially it will target some common security services for containerized workloads going into a kubernetes cluster. Specifically, it will target these services and tools but over time extend to support multiple tool options for the various security componenets. For those who are familiar with Department of Defense (DoD) Platform One's [Big Bang](https://github.com/DoD-Platform-One/big-bang), an open source secure platform, you'll recognize this stack. 
 - Ingress and Egress Control
   - [Istio](https://istio.io/)
